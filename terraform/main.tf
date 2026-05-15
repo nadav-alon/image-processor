@@ -28,6 +28,11 @@ locals {
   process_lambda_name   = "process_lambda"
 }
 
+variable "is_localstack" {
+  type = bool
+  default = true
+}
+
 resource "aws_dynamodb_table" "image_metadata_table" {
   name         = local.table_name
   billing_mode = "PAY_PER_REQUEST"
@@ -104,6 +109,31 @@ resource "aws_lambda_function" "metadata_lambda" {
   source_code_hash = data.archive_file.image_processing.output_base64sha256
 
   runtime = "nodejs16.x"
+
+  environment {
+    variables = {
+      AWS_ENDPOINT_URL = var.is_localstack ? "http://localhost.localstack.cloud:4566" : ""
+    }
+  }
+}
+
+resource "aws_lambda_permission" "allow_s3" {
+  statement_id  = "AllowS3Invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.metadata_lambda.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.images_bucket.arn
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.images_bucket.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.metadata_lambda.arn
+    events              = ["s3:ObjectCreated:Put"]
+  }
+
+  depends_on = [aws_lambda_permission.allow_s3]
 }
 
 resource "aws_lambda_function" "process_lambda" {
@@ -114,4 +144,10 @@ resource "aws_lambda_function" "process_lambda" {
   source_code_hash = data.archive_file.image_processing.output_base64sha256
 
   runtime = "nodejs16.x"
+
+  environment {
+    variables = {
+      AWS_ENDPOINT_URL = var.is_localstack ? "http://localhost.localstack.cloud:4566" : ""
+    }
+  }
 }
