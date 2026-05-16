@@ -97,8 +97,17 @@ resource "aws_iam_role" "lambda_execution_role" {
 
 data "archive_file" "image_processing" {
   type        = "zip"
-  source_file = "${path.module}/../index.js"
   output_path = "${path.module}/function.zip"
+
+  source {
+    content  = file("${path.module}/../index.js")
+    filename = "index.js"
+  }
+
+  source {
+    content  = file("${path.module}/../package.json")
+    filename = "package.json"
+  }
 }
 
 resource "aws_lambda_function" "metadata_lambda" {
@@ -112,8 +121,9 @@ resource "aws_lambda_function" "metadata_lambda" {
 
   environment {
     variables = {
+      TABLE_NAME       = local.table_name
+      QUEUE_URL        = aws_sqs_queue.process_queue.url
       AWS_ENDPOINT_URL = var.is_localstack ? "http://localhost.localstack.cloud:4566" : ""
-      TABLE_NAME = local.table_name
     }
   }
 }

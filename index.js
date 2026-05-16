@@ -18,7 +18,9 @@ const dynamoDbOptions = {}
 /**
  * @type {import('@aws-sdk/client-s3').S3ClientConfig}
  */
-const s3Options = {}
+const s3Options = {
+    forcePathStyle: true,
+}
 
 if (process.env.AWS_ENDPOINT_URL) {
     sqsOptions.endpoint = process.env.AWS_ENDPOINT_URL;
@@ -36,7 +38,7 @@ const ddb = new DynamoDBClient(dynamoDbOptions);
 export const save_metadata = async (event) => {
     const record = event.Records[0];
     const bucket = record.s3.bucket.name;
-    const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '));
+    const key = decodeURIComponent(record.s3.object.key);
     const size = record.s3.object.size;
     const uploadedAt = record.eventTime;
     const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
@@ -46,7 +48,7 @@ export const save_metadata = async (event) => {
     await ddb.send(new PutCommand({
       TableName: process.env.TABLE_NAME,
       Item: {
-        pk: key,
+        imageId: key,
         bucket,
         size,
         contentType,

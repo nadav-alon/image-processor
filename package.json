@@ -1,0 +1,7 @@
+{
+  "name": "image-processing-lambda",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lambda function for processing images via S3",
+  "main": "index.js"
+}
