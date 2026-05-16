@@ -42,8 +42,22 @@ export const save_metadata = async (event) => {
     const size = record.s3.object.size;
     const uploadedAt = record.eventTime;
     const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+
+    console.log('File Uploaded: ', key)
+
     const contentType = head.ContentType;
     const customMeta = head.Metadata; 
+
+    console.log('Updating Metadata Table: ', {
+        imageId: key,
+        bucket,
+        size,
+        contentType,
+        uploadedAt,
+        status: 'PENDING',
+        ...customMeta,
+      }
+)
 
     await ddb.send(new PutCommand({
       TableName: process.env.TABLE_NAME,
@@ -58,10 +72,15 @@ export const save_metadata = async (event) => {
       }
     }));
 
+    console.log('Metadata Updated Successfully')
+    console.log('Adding message to queue')
+
     await sqs.send(new SendMessageCommand({
       QueueUrl: process.env.QUEUE_URL,
       MessageBody: JSON.stringify({ bucket, key }),
     }));
+
+    console.log("Message added to queue")
 }
 
 /**

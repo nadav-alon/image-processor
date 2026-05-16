@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Lambda function for processing images via S3",
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "sharp": "^0.34.5"
+  }
 }
