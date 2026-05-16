@@ -108,11 +108,12 @@ resource "aws_lambda_function" "metadata_lambda" {
   handler          = "index.save_metadata"
   source_code_hash = data.archive_file.image_processing.output_base64sha256
 
-  runtime = "nodejs16.x"
+  runtime = "nodejs24.x"
 
   environment {
     variables = {
       AWS_ENDPOINT_URL = var.is_localstack ? "http://localhost.localstack.cloud:4566" : ""
+      TABLE_NAME = local.table_name
     }
   }
 }
@@ -143,7 +144,7 @@ resource "aws_lambda_function" "process_lambda" {
   handler          = "index.process_image"
   source_code_hash = data.archive_file.image_processing.output_base64sha256
 
-  runtime = "nodejs16.x"
+  runtime = "nodejs24.x"
 
   environment {
     variables = {

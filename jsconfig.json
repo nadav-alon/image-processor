@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "ES2020",
+    "moduleResolution": "nodenext",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+  },
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["aws-lambda", "@aws-sdk/client-s3", "@aws-sdk/client-dynamodb", "@aws-sdk/client-sqs", "@aws-sdk/lib-dynamodb"]
+  }
+}
