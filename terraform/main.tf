@@ -152,6 +152,19 @@ resource "aws_lambda_function" "process_lambda" {
       TABLE_NAME       = local.table_name
       QUEUE_URL        = aws_sqs_queue.process_queue.url
       AWS_ENDPOINT_URL = var.is_localstack ? "http://localhost.localstack.cloud:4566" : ""
+      THUMBNAIL_BUCKET = aws_s3_bucket.thumbnail_bucket.bucket
     }
+  }
+}
+
+resource "aws_lambda_event_source_mapping" "process_lambda_sqs_trigger" {
+  event_source_arn = aws_sqs_queue.process_queue.arn
+  function_name    = aws_lambda_function.process_lambda.arn
+  batch_size       = 5
+
+  function_response_types = ["ReportBatchItemFailures"]
+
+  scaling_config {
+    maximum_concurrency = 100
   }
 }
