@@ -8,12 +8,14 @@ provider "aws" {
   s3_use_path_style           = true
 
   endpoints {
-    dynamodb = "http://localhost:4566"
-    s3       = "http://localhost:4566"
-    sqs      = "http://localhost:4566"
-    iam      = "http://localhost:4566"
-    lambda   = "http://localhost:4566"
-    sts      = "http://localhost:4566"
+    dynamodb     = "http://localhost:4566"
+    s3           = "http://localhost:4566"
+    sqs          = "http://localhost:4566"
+    iam          = "http://localhost:4566"
+    lambda       = "http://localhost:4566"
+    sts          = "http://localhost:4566"
+    apigateway   = "http://localhost:4566"
+    apigatewayv2 = "http://localhost:4566"
   }
 }
 
@@ -166,5 +168,31 @@ resource "aws_lambda_event_source_mapping" "process_lambda_sqs_trigger" {
 
   scaling_config {
     maximum_concurrency = 100
+  }
+}
+
+# CORS configuration for original images bucket
+resource "aws_s3_bucket_cors_configuration" "images_cors" {
+  bucket = aws_s3_bucket.images_bucket.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "PUT", "POST"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
+
+# CORS configuration for thumbnails bucket
+resource "aws_s3_bucket_cors_configuration" "thumbnails_cors" {
+  bucket = aws_s3_bucket.thumbnail_bucket.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
   }
 }

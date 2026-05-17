@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether Gallery — Cybernetic Image Matrix</title>
+  <!-- Google Fonts: Inter and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090615, #140b24, #08030f);
+      --card-bg: rgba(25, 16, 44, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #ffffff;
+      --text-secondary: #a29bb6;
+      --neon-purple: #9d4edd;
+      --neon-cyan: #2ec4b6;
+      --neon-pink: #ff007f;
+      --glow-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+      --transition-standard: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(9, 6, 21, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--neon-purple);
+      border-radius: 4px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Premium Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Settings Box */
+    .settings-panel {
+      background: rgba(20, 12, 36, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .settings-panel.active {
+      display: block;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-group input {
+      background: rgba(10, 5, 20, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: white;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: var(--transition-standard);
+    }
+
+    .input-group input:focus {
+      border-color: var(--neon-cyan);
+      outline: none;
+      box-shadow: 0 0 10px rgba(46, 196, 182, 0.2);
+    }
+
+    /* Interactive Upload Section */
+    .upload-zone {
+      background: var(--card-bg);
+      border: 2px dashed rgba(157, 78, 221, 0.3);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      margin-bottom: 40px;
+      backdrop-filter: blur(16px) saturate(180%);
+      transition: var(--transition-standard);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 25px rgba(46, 196, 182, 0.15);
+      background: rgba(25, 16, 44, 0.6);
+    }
+
+    .upload-zone p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .upload-zone span {
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    /* Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    /* Premium Image Cards */
+    .image-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(16px) saturate(180%);
+      transition: var(--transition-standard);
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .image-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(157, 78, 221, 0.6);
+      box-shadow: var(--glow-shadow);
+    }
+
+    .image-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, transparent 60%, rgba(9, 6, 21, 0.95));
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .img-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 75%; /* 4:3 Aspect Ratio */
+      background: #0f0a1d;
+      overflow: hidden;
+    }
+
+    .img-wrapper img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-standard);
+    }
+
+    .image-card:hover .img-wrapper img {
+      transform: scale(1.08);
+    }
+
+    .card-info {
+      padding: 16px;
+      position: relative;
+      z-index: 2;
+      background: rgba(9, 6, 21, 0.7);
+      border-top: 1px solid var(--glass-border);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .card-tag {
+      background: rgba(157, 78, 221, 0.15);
+      color: var(--neon-purple);
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+    }
+
+    /* Skeleton Loader */
+    .skeleton {
+      background: linear-gradient(90deg, #18112d 25%, #241945 50%, #18112d 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Modal / Lightbox System */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 3, 11, 0.9);
+      backdrop-filter: blur(25px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 85%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.8), 0 0 30px rgba(157, 78, 221, 0.2);
+      border: 1px solid var(--glass-border);
+      object-fit: contain;
+    }
+
+    .modal-details {
+      margin-top: 20px;
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: var(--transition-standard);
+    }
+
+    .close-btn:hover {
+      color: var(--neon-pink);
+      transform: rotate(90deg);
+    }
+
+    /* Buttons */
+    .btn-action {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      border: none;
+      border-radius: 20px;
+      color: white;
+      padding: 10px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3);
+      transition: var(--transition-standard);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 0, 127, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      color: white;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: var(--transition-standard);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(20, 10, 35, 0.85);
+      border: 1px solid var(--neon-cyan);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(46, 196, 182, 0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition-standard);
+      z-index: 2000;
+      font-weight: 500;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <h1>Aether Gallery</h1>
+        <div class="subtitle">Cybernetic Processing Interface</div>
+      </div>
+      <div class="header-controls">
+        <button class="btn-secondary" onclick="toggleSettings()">⚙️ Configuration</button>
+        <button class="btn-action" onclick="fetchImages()">Query Matrix</button>
+      </div>
+    </header>
+
+    <!-- Dynamic Settings Panel -->
+    <div class="settings-panel" id="settings-panel">
+      <h3 style="margin-bottom: 16px; font-family: 'Outfit';">LocalStack Matrix Configuration</h3>
+      <div class="settings-grid">
+        <div class="input-group">
+          <label for="api-endpoint">Gateway API URL</label>
+          <input type="text" id="api-endpoint" placeholder="Auto-inferred once deployed or enter manually">
+        </div>
+        <div class="input-group">
+          <label for="s3-original">S3 Original Endpoint</label>
+          <input type="text" id="s3-original" placeholder="http://localhost:4566/images">
+        </div>
+        <div class="input-group">
+          <label for="s3-thumbnail">S3 Thumbnail Endpoint</label>
+          <input type="text" id="s3-thumbnail" placeholder="http://localhost:4566/thumbnails">
+        </div>
+      </div>
+      <button class="btn-action" style="margin-top: 20px;" onclick="saveSettings()">Save & Reload Matrix</button>
+    </div>
+
+    <!-- Sleek S3 Drag and Drop Upload Area -->
+    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <p>🧬 Drag & Drop raw image matrix or <span>browse locally</span> to inject to S3</p>
+      <input type="file" id="file-input" accept="image/*" onchange="handleFileUpload(event)">
+    </div>
+
+    <!-- Gallery Matrix Grid -->
+    <main class="gallery-grid" id="gallery">
+      <!-- Loading skeletons -->
+      <div class="image-card skeleton" style="height: 250px;"></div>
+      <div class="image-card skeleton" style="height: 250px;"></div>
+      <div class="image-card skeleton" style="height: 250px;"></div>
+      <div class="image-card skeleton" style="height: 250px;"></div>
+    </main>
+  </div>
+
+  <!-- Full Image Modal Lightbox -->
+  <div class="modal" id="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <img class="modal-img" id="modal-img" src="" alt="Full Version">
+      <div class="modal-details">
+        <h2 class="modal-title" id="modal-title">image_processing_matrix.jpg</h2>
+        <div class="modal-meta">
+          <span id="modal-size">Size: -- MB</span>
+          <span id="modal-date">Injected: --</span>
+          <span id="modal-type">Type: --</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feed -->
+  <div class="toast" id="toast">Matrix updated successfully.</div>
+
+  <script>
+    // LocalStorage keys
+    const KEYS = {
+      API_ENDPOINT: "aether_api_endpoint",
+      S3_ORIGINAL: "aether_s3_original",
+      S3_THUMBNAIL: "aether_s3_thumbnail"
+    };
+
+    // Default configuration points
+    const DEFAULTS = {
+      API_ENDPOINT: "", // Loaded from local storage or populated manually
+      S3_ORIGINAL: "http://localhost:4566/images",
+      S3_THUMBNAIL: "http://localhost:4566/thumbnails"
+    };
+
+    // Load initial settings
+    function loadSettings() {
+      document.getElementById("api-endpoint").value = localStorage.getItem(KEYS.API_ENDPOINT) || DEFAULTS.API_ENDPOINT;
+      document.getElementById("s3-original").value = localStorage.getItem(KEYS.S3_ORIGINAL) || DEFAULTS.S3_ORIGINAL;
+      document.getElementById("s3-thumbnail").value = localStorage.getItem(KEYS.S3_THUMBNAIL) || DEFAULTS.S3_THUMBNAIL;
+    }
+
+    function saveSettings() {
+      const api = document.getElementById("api-endpoint").value.trim();
+      const orig = document.getElementById("s3-original").value.trim();
+      const thumb = document.getElementById("s3-thumbnail").value.trim();
+
+      localStorage.setItem(KEYS.API_ENDPOINT, api);
+      localStorage.setItem(KEYS.S3_ORIGINAL, orig);
+      localStorage.setItem(KEYS.S3_THUMBNAIL, thumb);
+
+      toggleSettings(false);
+      showToast("⚙️ Matrix settings saved successfully.");
+      fetchImages();
+    }
+
+    function toggleSettings(forceState) {
+      const panel = document.getElementById("settings-panel");
+      if (forceState !== undefined) {
+        if (forceState) panel.classList.add("active");
+        else panel.classList.remove("active");
+      } else {
+        panel.classList.toggle("active");
+      }
+    }
+
+    async function fetchImages() {
+      const gallery = document.getElementById("gallery");
+      
+      // Render initial sleek skeletons
+      gallery.innerHTML = Array(4).fill(0).map(() => `
+        <div class="image-card" style="pointer-events: none; border-color: var(--glass-border)">
+          <div class="img-wrapper skeleton"></div>
+          <div class="card-info">
+            <div class="card-title skeleton" style="height: 18px; border-radius: 4px; width: 80%; margin-bottom: 12px;"></div>
+            <div class="card-meta">
+              <div class="skeleton" style="height: 12px; border-radius: 2px; width: 40px;"></div>
+              <div class="skeleton" style="height: 12px; border-radius: 2px; width: 60px;"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const apiEndpoint = localStorage.getItem(KEYS.API_ENDPOINT) || DEFAULTS.API_ENDPOINT;
+      const s3Original = localStorage.getItem(KEYS.S3_ORIGINAL) || DEFAULTS.S3_ORIGINAL;
+      const s3Thumbnail = localStorage.getItem(KEYS.S3_THUMBNAIL) || DEFAULTS.S3_THUMBNAIL;
+
+      try {
+        let items = [];
+        
+        // Attempt to fetch from Listing Lambda if configured
+        if (apiEndpoint) {
+          try {
+            const response = await fetch(apiEndpoint);
+            if (response.ok) {
+              items = await response.json();
+            } else {
+              throw new Error(`HTTP API Gateway responded with status: ${response.status}`);
+            }
+          } catch (apiError) {
+            console.warn("API Gateway failed. Querying S3 Buckets directly as fallback...", apiError);
+            items = await fetchS3Directly(s3Original, s3Thumbnail);
+          }
+        } else {
+          // If Gateway is not configured yet, query S3 Directly in browser
+          items = await fetchS3Directly(s3Original, s3Thumbnail);
+        }
+
+        if (items.length === 0) {
+          gallery.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">
+              <p style="font-size: 1.2rem; margin-bottom: 12px;">📭 The matrix is empty.</p>
+              <p style="font-size: 0.9rem;">Upload images using the drag & drop area above or the local shell scripts to process thumbnails.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Render premium image cards
+        gallery.innerHTML = items.map(item => {
+          const sizeMB = (item.size / (1024 * 1024)).toFixed(2);
+          const dateString = new Date(item.uploadedAt).toLocaleDateString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          
+          return `
+            <div class="image-card" onclick="openLightbox('${item.originalUrl}', '${item.name.replace(/'/g, "\\'")}', '${sizeMB}', '${dateString}', '${item.contentType}')">
+              <div class="img-wrapper">
+                <img src="${item.thumbnailUrl}" alt="${item.name}" loading="lazy" onload="this.style.opacity=1" style="opacity: 0; transition: opacity 0.5s ease;">
+              </div>
+              <div class="card-info">
+                <div class="card-title" title="${item.name}">${item.name}</div>
+                <div class="card-meta">
+                  <span class="card-tag">COMPLETE</span>
+                  <span>${sizeMB} MB</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("Gallery query failed:", err);
+        gallery.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; border: 1px solid rgba(255, 0, 127, 0.3); border-radius: 12px; background: rgba(255, 0, 127, 0.05);">
+            <p style="color: var(--neon-pink); font-size: 1.1rem; margin-bottom: 8px; font-weight: 600;">System Error: Matrix Disconnected</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">Could not connect to LocalStack endpoints.</p>
+            <button class="btn-secondary" onclick="toggleSettings(true)">Open Settings</button>
+          </div>
+        `;
+      }
+    }
+
+    // Direct Browser Fallback - Lists S3 Thumbnails bucket using LocalStack REST API
+    async function fetchS3Directly(s3Original, s3Thumbnail) {
+      const items = [];
+      const s3ListResponse = await fetch(`${s3Thumbnail}?list-type=2`);
+      if (!s3ListResponse.ok) return [];
+
+      const text = await s3ListResponse.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, "text/xml");
+      const contents = xml.getElementsByTagName("Contents");
+      
+      for (let i = 0; i < contents.length; i++) {
+        const key = contents[i].getElementsByTagName("Key")[0].textContent;
+        const size = parseInt(contents[i].getElementsByTagName("Size")[0].textContent);
+        const name = key.split("-").slice(1).join("-") || key;
+        items.push({
+          imageId: key,
+          name: name,
+          size: size,
+          contentType: "image/jpeg",
+          thumbnailUrl: `${s3Thumbnail}/${encodeURIComponent(key)}`,
+          originalUrl: `${s3Original}/${encodeURIComponent(key)}`,
+          uploadedAt: new Date().toISOString() // Fallback upload date
+        });
+      }
+      return items;
+    }
+
+    // Direct Upload to S3 Original Bucket via Javascript File API
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const s3Original = localStorage.getItem(KEYS.S3_ORIGINAL) || DEFAULTS.S3_ORIGINAL;
+      const key = `${Date.now()}-${file.name}`;
+      const uploadUrl = `${s3Original}/${encodeURIComponent(key)}`;
+
+      showToast(`🧬 Injecting ${file.name} to matrix...`);
+
+      try {
+        const response = await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type
+          }
+        });
+
+        if (response.ok) {
+          showToast(`✓ Image successfully injected! Wait a moment for Lambda processing...`);
+          // Automatically refresh the matrix after 3 seconds (giving LocalStack processing pipeline time to run)
+          setTimeout(fetchImages, 3000);
+        } else {
+          throw new Error("S3 Upload Failed");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        showToast("❌ Image injection failed! Check console for details.");
+      }
+    }
+
+    // Modal Lightbox controller
+    function openLightbox(url, name, size, date, type) {
+      document.getElementById("modal-img").src = url;
+      document.getElementById("modal-title").innerText = name;
+      document.getElementById("modal-size").innerText = `Size: ${size} MB`;
+      document.getElementById("modal-date").innerText = `Injected: ${date}`;
+      document.getElementById("modal-type").innerText = `Type: ${type}`;
+      document.getElementById("modal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("active");
+    }
+
+    // Toast triggers
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.classList.add("active");
+      setTimeout(() => {
+        toast.classList.remove("active");
+      }, 4000);
+    }
+
+    // Drag & Drop event bindings
+    const dropZone = document.getElementById("drop-zone");
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = "var(--neon-cyan)";
+        dropZone.style.boxShadow = "0 0 25px rgba(46, 196, 182, 0.3)";
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = "rgba(157, 78, 221, 0.3)";
+        dropZone.style.boxShadow = "none";
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length) {
+        const input = document.getElementById("file-input");
+        input.files = files;
+        handleFileUpload({ target: { files: files } });
+      }
+    });
+
+    // Initial load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadSettings();
+      fetchImages();
+    });
+  </script>
+</body>
+</html>
