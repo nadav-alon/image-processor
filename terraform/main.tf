@@ -16,6 +16,8 @@ provider "aws" {
     sts          = "http://localhost:4566"
     apigateway   = "http://localhost:4566"
     apigatewayv2 = "http://localhost:4566"
+    sns          = "http://localhost:4566"
+    cloudwatch   = "http://localhost:4566"
   }
 }
 
@@ -56,7 +58,7 @@ resource "aws_s3_bucket" "thumbnail_bucket" {
 
 resource "aws_sqs_queue" "process_queue" {
   name                      = local.process_queue_name
-  delay_seconds             = 90
+  delay_seconds             = 0
   max_message_size          = 2048
   message_retention_seconds = 86400
   receive_wait_time_seconds = 10
@@ -171,7 +173,6 @@ resource "aws_lambda_event_source_mapping" "process_lambda_sqs_trigger" {
   }
 }
 
-# CORS configuration for original images bucket
 resource "aws_s3_bucket_cors_configuration" "images_cors" {
   bucket = aws_s3_bucket.images_bucket.id
 
@@ -184,7 +185,6 @@ resource "aws_s3_bucket_cors_configuration" "images_cors" {
   }
 }
 
-# CORS configuration for thumbnails bucket
 resource "aws_s3_bucket_cors_configuration" "thumbnails_cors" {
   bucket = aws_s3_bucket.thumbnail_bucket.id
 
@@ -194,5 +194,60 @@ resource "aws_s3_bucket_cors_configuration" "thumbnails_cors" {
     allowed_origins = ["*"]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
+  }
+}
+
+resource "aws_sns_topic" "alerts_topic" {
+  name = "system_alerts"
+}
+
+resource "aws_cloudwatch_metric_alarm" "sqs_unprocessed_backlog_alarm" {
+  alarm_name          = "sqs_unprocessed_backlog_alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 60
+  statistic           = "Maximum"
+  threshold           = 5
+  alarm_description   = "This alarm monitors SQS backlog. Triggers if messages pile up unprocessed."
+  alarm_actions       = [aws_sns_topic.alerts_topic.arn]
+
+  dimensions = {
+    QueueName = aws_sqs_queue.process_queue.name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "dlq_alarm" {
+  alarm_name          = "sqs_dlq_message_alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 60
+  statistic           = "Maximum"
+  threshold           = 0
+  alarm_description   = "Critical! Triggered immediately if processing fails and a message lands in the DLQ."
+  alarm_actions       = [aws_sns_topic.alerts_topic.arn]
+
+  dimensions = {
+    QueueName = aws_sqs_queue.process_dlq.name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "process_lambda_error_alarm" {
+  alarm_name          = "process_lambda_errors_alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "Monitors runtime execution errors in the image processing Lambda function."
+  alarm_actions       = [aws_sns_topic.alerts_topic.arn]
+
+  dimensions = {
+    FunctionName = aws_lambda_function.process_lambda.function_name
   }
 }
