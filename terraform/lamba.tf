@@ -49,6 +49,7 @@ resource "aws_lambda_function" "process_lambda" {
   source_code_hash = data.archive_file.image_processing.output_base64sha256
 
   runtime = "nodejs24.x"
+  timeout = 60
 
   environment {
     variables = {
