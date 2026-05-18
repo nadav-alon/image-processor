@@ -4,6 +4,9 @@
   "type": "module",
   "description": "Lambda function for processing images via S3",
   "main": "index.js",
+  "scripts": {
+    "test": "node --test index.test.js"
+  },
   "dependencies": {
     "sharp": "^0.34.5"
   }

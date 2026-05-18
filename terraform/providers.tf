@@ -18,8 +18,9 @@ provider "aws" {
       sts          = "http://localhost:4566"
       apigateway   = "http://localhost:4566"
       apigatewayv2 = "http://localhost:4566"
-      sns          = "http://localhost:4566"
-      cloudwatch   = "http://localhost:4566"
+      sns            = "http://localhost:4566"
+      cloudwatch     = "http://localhost:4566"
+      cloudwatchlogs = "http://localhost:4566"
     }
   }
 }
