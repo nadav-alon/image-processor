@@ -8,7 +8,7 @@ The project is complete with an AI generated frontend client, a dependency-free 
 
 ---
 
-## 📐 Architecture Overview
+## Architecture Overview
 
 ```mermaid
 graph TD
@@ -34,7 +34,7 @@ graph TD
     SQS_DLQ -->|CloudWatch Alarm| SNS[SNS System Alerts]
 ```
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Infrastructure as Code**: Terraform (~> 6.0 AWS Provider)
 * **Backend Runtime**: Node.js (ESM, `nodejs24.x`)
@@ -47,7 +47,7 @@ graph TD
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 ├── index.html               # Web UI client
@@ -71,11 +71,11 @@ graph TD
 
 ---
 
-## 🚀 Getting Started (Local Development)
+## Getting Started (Local Development)
 
 This repository is optimized to run entirely on your local machine using **LocalStack** to emulate AWS.
 
-### 📋 Prerequisites
+### Prerequisites
 1. **Docker Desktop** (with WSL2 integration enabled if on Windows).
 2. **LocalStack CLI** (`pip install localstack` or binary download).
 3. **Terraform CLI** (v1.2+).
@@ -111,12 +111,12 @@ node integration-test.mjs
 
 ---
 
-## 🎨 Frontend Gallery Client
+## Frontend Gallery Client
 
 The project includes a client for interacting with the S3 pipeline. Note that this client is for local development only, and has some security issues that would need to be addressed if it were to be used for production.
 
 ### How to use:
 1. Open the [index.html](file:///home/cowclaw/image-processor/index.html) file directly in any modern browser.
-2. Click **⚙️ Configuration** to configure the LocalStack API gateway URLs (defaults are set to map onto local ports `http://localhost:4566/images` and `http://localhost:4566/thumbnails`).
+2. Click **Configuration** to configure the LocalStack API gateway URLs (defaults are set to map onto local ports `http://localhost:4566/images` and `http://localhost:4566/thumbnails`).
 3. Drag and drop any image matrix file into the interactive zone to inject it into S3.
 4. Click **Query Matrix** to fetch complete thumbnails and view high-resolution originals inside the built-in lightbox.
