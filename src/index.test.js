@@ -27,7 +27,7 @@ test("save_metadata lambda", async (t) => {
       s3HeadPayload = command.input;
       return {
         ContentType: "image/jpeg",
-        Metadata: { owner: "cowclaw" },
+        Metadata: { owner: "dev" },
       };
     }
     throw new Error(`Unexpected S3 command: ${command.constructor.name}`);
@@ -87,7 +87,7 @@ test("save_metadata lambda", async (t) => {
     contentType: "image/jpeg",
     uploadedAt: "2026-05-18T17:40:00.000Z",
     status: "PENDING",
-    owner: "cowclaw",
+    owner: "dev",
   });
 
   assert.ok(sqsSentPayload);
@@ -170,6 +170,9 @@ test("process_image lambda - success flow", async (t) => {
 });
 
 test("process_image lambda - error retry propagation flow", async (t) => {
+  // Suppress console.error in tests to avoid confusing stack traces for expected errors
+  mock.method(console, "error", () => {});
+
   // Mock GetObjectCommand to fail, which triggers our handler's catch-block
   mock.method(S3Client.prototype, "send", async (command) => {
     if (command.constructor.name === "GetObjectCommand") {
