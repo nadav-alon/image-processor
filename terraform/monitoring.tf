@@ -59,3 +59,13 @@ resource "aws_cloudwatch_metric_alarm" "process_lambda_error_alarm" {
     FunctionName = aws_lambda_function.process_lambda.function_name
   }
 }
+
+resource "aws_cloudwatch_log_group" "metadata_log_group" {
+  name              = "/aws/lambda/${local.metadata_lambda_name}"
+  retention_in_days = 14
+}
+
+resource "aws_cloudwatch_log_group" "process_log_group" {
+  name              = "/aws/lambda/${local.process_lambda_name}"
+  retention_in_days = 14
+}
