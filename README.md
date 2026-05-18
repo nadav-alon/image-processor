@@ -1,5 +1,7 @@
 # Image Processing Matrix
 
+[![CI Pipeline](https://github.com/nadav-alon/image-processor/actions/workflows/ci.yml/badge.svg)](https://github.com/nadav-alon/image-processor/actions/workflows/ci.yml)
+
 > **Small scale, AWS deployed image to thumbnail processing unit**
 
 An event-driven, serverless pipeline deployed on AWS to asynchronously convert raw image uploads into optimized thumbnails. The architecture decouples the metadata indexing from the image processing stage using SQS messaging, ensuring scalability, resilience, and strict fault tolerance with built-in dead-letter queue (DLQ) routing.
