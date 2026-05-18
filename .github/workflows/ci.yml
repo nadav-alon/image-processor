@@ -20,7 +20,12 @@ jobs:
         with:
           node-version: 24
           cache: 'npm'
-          cache-dependency-path: src/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            src/package-lock.json
+
+      - name: Install Test Dependencies
+        run: npm ci
 
       - name: Install Lambda Dependencies
         run: npm ci
@@ -43,7 +48,9 @@ jobs:
         with:
           node-version: 24
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            src/package-lock.json
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
