@@ -7,4 +7,12 @@ resource "aws_dynamodb_table" "image_metadata_table" {
     name = "imageId"
     type = "S"
   }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
