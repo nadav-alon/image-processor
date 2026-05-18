@@ -116,7 +116,7 @@ node integration-test.mjs
 The project includes a client for interacting with the S3 pipeline. Note that this client is for local development only, and has some security issues that would need to be addressed if it were to be used for production.
 
 ### How to use:
-1. Open the [index.html](file:///home/cowclaw/image-processor/index.html) file directly in any modern browser.
-2. Click **Configuration** to configure the LocalStack API gateway URLs (defaults are set to map onto local ports `http://localhost:4566/images` and `http://localhost:4566/thumbnails`).
+1. Ensure the infrastructure is deployed (via `terraform apply` or by running the E2E script), which automatically generates `config.js` containing the dynamically-generated bucket endpoints.
+2. Open the [index.html](file:///home/cowclaw/image-processor/index.html) file directly in any modern browser or host it via a local web server (e.g. `python3 -m http.server 3000`). The client will automatically load the active endpoints.
 3. Drag and drop any image matrix file into the interactive zone to inject it into S3.
 4. Click **Query Matrix** to fetch complete thumbnails and view high-resolution originals inside the built-in lightbox.
