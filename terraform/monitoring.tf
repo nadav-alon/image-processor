@@ -3,6 +3,12 @@ resource "aws_sns_topic" "alerts_topic" {
   name = "system_alerts"
 }
 
+resource "aws_sns_topic_subscription" "alerts_http_subscription" {
+  topic_arn = aws_sns_topic.alerts_topic.arn
+  protocol  = var.is_localstack ? "http" : "https"
+  endpoint  = var.is_localstack ? "http://localhost:8080/alerts" : var.alert_endpoint
+}
+
 resource "aws_cloudwatch_metric_alarm" "sqs_unprocessed_backlog_alarm" {
   alarm_name          = "sqs_unprocessed_backlog_alarm"
   comparison_operator = "GreaterThanThreshold"
