@@ -1,0 +1,70 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: src/package-lock.json
+
+      - name: Install Lambda Dependencies
+        run: npm ci
+        working-directory: src
+
+      - name: Run Unit Tests
+        run: npm test
+        working-directory: src
+
+  integration-tests:
+    name: Run E2E Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+          terraform_wrapper: false
+
+      - name: Install Root Dependencies
+        run: npm ci
+
+      - name: Install Lambda Dependencies (for zipping)
+        run: npm ci
+        working-directory: src
+
+      - name: Setup & Start LocalStack
+        uses: LocalStack/setup-localstack@main
+        with:
+          image-tag: 'latest'
+          use-pro: ${{ secrets.LOCALSTACK_AUTH_TOKEN != '' }}
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+
+      - name: Run E2E Integration Tests
+        run: npm run test:integration

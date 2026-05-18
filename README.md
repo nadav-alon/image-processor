@@ -91,9 +91,11 @@ Verify that the services are online by running `localstack status`.
 ### 2. Run the Native Unit Tests
 Unit tests run using Node's native test runner (no Jest or Mocha dependencies required):
 ```bash
+# Install dependencies in the lambda function directory
 cd src
 npm install
 npm run test
+cd ..
 ```
 
 ### 3. Run the End-to-End Integration Test
@@ -106,7 +108,11 @@ The E2E suite automates the entire developer pipeline:
 
 Run the E2E script from the root directory:
 ```bash
-node integration-test.mjs
+# Install the E2E testing dependencies in the root
+npm install
+
+# Run the integration test suite
+npm run test:integration
 ```
 
 ---
