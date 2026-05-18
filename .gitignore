@@ -1,6 +1,4 @@
 terraform/*
 !terraform/*.tf
 node_modules/
-
-package-lock.json
 config.js
