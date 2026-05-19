@@ -49,30 +49,6 @@ graph TD
 
 ---
 
-## Repository Structure
-
-```text
-├── index.html               # Web UI client
-├── integration-test.mjs     # E2E LocalStack integration test runner
-├── src/                     # Lambda application layer
-│   ├── index.js             # save_metadata and process_image handlers
-│   ├── index.test.js        # Native mock unit tests
-│   ├── package.json         # Lambda dependencies & script definitions
-│   └── jsconfig.json        # JS linting and editor autocomplete configuration
-└── terraform/               # Infrastructure definitions
-    ├── main.tf              # Entrypoint provider configuration (LocalStack/AWS switch)
-    ├── s3.tf                # Source & Thumbnail bucket definitions, CORS, blocks
-    ├── sqs.tf               # Process queue, DLQ, and redrive permissions
-    ├── dynamodb.tf          # DynamoDB table configuration with PITR enabled
-    ├── iam.tf               # Least-privilege role policies for both Lambdas
-    ├── lambda.tf            # ZIP bundling, Lambda specs, and event source triggers
-    ├── monitoring.tf        # CloudWatch Alarms & SNS Alert Topic
-    ├── variables.tf         # Multi-environment deployment definitions
-    └── local.tf             # Local naming and conventions helpers
-```
-
----
-
 ## Getting Started (Local Development)
 
 This repository is optimized to run entirely on your local machine using **LocalStack** to emulate AWS.
